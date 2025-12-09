@@ -78,6 +78,26 @@ class PerishableProduct extends Product {
     toString() {
         return `Product: ${this.name}, Price: $${this.price.toFixed(2)}, Quantity: ${this.quantity}, Expiration Date: ${this.expirationDate}`;
     }
+    /**
+     * Checks if product is expired
+     * @param {string} currentDate - Optional current date (YYYY-MM-DD)
+     * @returns {boolean} True if expired
+     */
+    isExpired(currentDate = new Date().toISOString().split('T')[0]) {
+        return this.expirationDate < currentDate;
+    }
+
+    /**
+     * Checks if product will expire within days
+     * @param {number} days - Days threshold
+     * @returns {boolean} True if expiring soon
+     */
+    isExpiringSoon(days = 7) {
+        const today = new Date();
+        const expireDate = new Date(this.expirationDate);
+        const daysUntilExpire = Math.ceil((expireDate - today) / (1000 * 60 * 60 * 24));
+        return daysUntilExpire <= days && daysUntilExpire >= 0;
+    }
 }
 
 /**
