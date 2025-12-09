@@ -346,4 +346,47 @@ class Store {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     }
+     // Update the Product constructor:
+    constructor(name, price, quantity) {
+        // Validation
+        if (!name || typeof name !== 'string' || name.trim().length === 0) {
+            throw new Error('Product name must be a non-empty string');
+        }
+        if (typeof price !== 'number' || price <= 0) {
+            throw new Error('Product price must be a positive number');
+        }
+        if (!Number.isInteger(quantity) || quantity < 0) {
+            throw new Error('Product quantity must be a non-negative integer');
+        }
+        
+        this.name = name.trim();
+        this.price = Number(price.toFixed(2)); // Ensure 2 decimal places
+        this.quantity = quantity;
+    }
+
+    // Add these methods to Product class:
+    
+    /**
+     * Increases product price by percentage
+     * @param {number} percentage - Percentage increase (e.g., 10 for 10%)
+     */
+    increasePrice(percentage) {
+        if (percentage < 0) {
+            throw new Error('Percentage must be non-negative');
+        }
+        this.price *= (1 + percentage / 100);
+        this.price = Number(this.price.toFixed(2));
+    }
+
+    /**
+     * Decreases product price by percentage
+     * @param {number} percentage - Percentage decrease
+     */
+    decreasePrice(percentage) {
+        if (percentage < 0 || percentage > 100) {
+            throw new Error('Percentage must be between 0 and 100');
+        }
+        this.price *= (1 - percentage / 100);
+        this.price = Number(this.price.toFixed(2));
+    }
 }
