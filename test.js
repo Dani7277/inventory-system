@@ -93,3 +93,28 @@ const runTests = () => {
         console.error("Test Error:", error);
     }
 };
+const clearOutput = () => {
+    document.getElementById('output').innerHTML = '';
+    document.getElementById('inventoryDisplay').innerHTML = '';
+    console.log("🗑️ Output cleared");
+};
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("🛒 Inventory Management System Loaded");
+    console.log("Available commands: runTests(), clearOutput()");
+    
+    // Display welcome message
+    document.getElementById('output').innerHTML = `
+        <h3>Welcome to the Inventory Management System</h3>
+        <p>Click "Run Tests" to execute the inventory system demo.</p>
+        <p>This will:</p>
+        <ol>
+            <li>Create 6 products (3 regular, 3 perishable)</li>
+            <li>Add them to a store inventory</li>
+            <li>Calculate total inventory value</li>
+            <li>Apply a 15% discount</li>
+            <li>Recalculate discounted value</li>
+            <li>Search for a specific product</li>
+        </ol>
+    `;
+});
