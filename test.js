@@ -14,3 +14,24 @@ const createTestProducts = () => {
     
     return [apple, bread, chips, milk, yogurt, cheese];
 };
+const testProductMethods = () => {
+    console.log("🧪 Testing Product methods...");
+    
+    // Create a test product
+    const testProduct = new Product("Test Item", 10, 5);
+    
+    // Test getTotalValue()
+    const totalValue = testProduct.getTotalValue();
+    console.log(`Total value of ${testProduct.name}: $${totalValue}`);
+    
+    // Test toString()
+    const productString = testProduct.toString();
+    console.log("Product toString():", productString);
+    
+    // Test PerishableProduct
+    const perishable = new PerishableProduct("Test Perishable", 5, 10, "2024-12-01");
+    const perishableString = perishable.toString();
+    console.log("PerishableProduct toString():", perishableString);
+    
+    return "✅ Product methods tested successfully";
+};
