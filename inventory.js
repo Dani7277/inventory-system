@@ -126,4 +126,34 @@ class Store {
             product.name.toLowerCase() === name.toLowerCase()
         ) || null;
     }
+     displayInventory() {
+        if (this.inventory.length === 0) {
+            return '<p>No products in inventory</p>';
+        }
+
+        let html = `<div class="product-list">`;
+        
+        this.inventory.forEach(product => {
+            const isPerishable = product instanceof PerishableProduct;
+            const productClass = isPerishable ? 'perishable' : 'regular';
+            const typeLabel = isPerishable ? '🕒 Perishable' : '📦 Regular';
+            
+            html += `
+                <div class="product-card ${productClass}">
+                    <h3>${product.name} <small>(${typeLabel})</small></h3>
+                    <p><strong>Price:</strong> $${product.price.toFixed(2)}</p>
+                    <p><strong>Quantity:</strong> ${product.quantity}</p>
+                    <p><strong>Total Value:</strong> $${product.getTotalValue().toFixed(2)}</p>
+            `;
+            
+            if (isPerishable) {
+                html += `<p><strong>Expires:</strong> ${product.expirationDate}</p>`;
+            }
+            
+            html += `</div>`;
+        });
+        
+        html += `</div>`;
+        return html;
+    }
 }
