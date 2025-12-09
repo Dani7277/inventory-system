@@ -156,4 +156,41 @@ class Store {
         html += `</div>`;
         return html;
     }
+      /**
+     * Searches products by name (case-insensitive partial match)
+     * @param {string} searchTerm - Term to search for
+     * @returns {Array} Array of matching products
+     */
+    searchProducts(searchTerm) {
+        if (!searchTerm || typeof searchTerm !== 'string') {
+            return [];
+        }
+        const term = searchTerm.toLowerCase();
+        return this.inventory.filter(product => 
+            product.name.toLowerCase().includes(term)
+        );
+    }
+
+    /**
+     * Filters products by price range
+     * @param {number} minPrice - Minimum price
+     * @param {number} maxPrice - Maximum price
+     * @returns {Array} Filtered products
+     */
+    filterByPriceRange(minPrice, maxPrice) {
+        return this.inventory.filter(product => 
+            product.price >= minPrice && product.price <= maxPrice
+        );
+    }
+
+    /**
+     * Filters products that are low in stock
+     * @param {number} threshold - Low stock threshold
+     * @returns {Array} Products with quantity below threshold
+     */
+    getLowStockProducts(threshold = 10) {
+        return this.inventory.filter(product => 
+            product.quantity < threshold
+        );
+    }
 }
