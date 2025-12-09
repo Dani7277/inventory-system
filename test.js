@@ -198,6 +198,66 @@ const runUnitTests = () => {
     const passedCount = tests.filter(t => t.passed).length;
     const totalCount = tests.length;
     outputDiv.innerHTML += `<h4>Summary: ${passedCount}/${totalCount} tests passed</h4>`;
+
+let globalStore = null; // Make store accessible globally
+
+// Initialize form handling
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+    
+    // Initialize store
+    globalStore = new Store();
+    
+    // Set up form
+    const productForm = document.getElementById('productForm');
+    const isPerishableCheckbox = document.getElementById('isPerishable');
+    const expirationSection = document.getElementById('expirationSection');
+    
+    // Show/hide expiration date field
+    isPerishableCheckbox.addEventListener('change', function() {
+        expirationSection.style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Handle form submission
+    productForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('productName').value;
+        const price = parseFloat(document.getElementById('productPrice').value);
+        const quantity = parseInt(document.getElementById('productQuantity').value);
+        const isPerishable = document.getElementById('isPerishable').checked;
+        const expirationDate = document.getElementById('expirationDate').value;
+        
+        try {
+            let product;
+            if (isPerishable) {
+                if (!expirationDate) {
+                    alert('Please enter an expiration date for perishable products');
+                    return;
+                }
+                product = new PerishableProduct(name, price, quantity, expirationDate);
+            } else {
+                product = new Product(name, price, quantity);
+            }
+            
+            globalStore.addProduct(product);
+            globalStore.saveToLocalStorage();
+            
+            // Update display
+            document.getElementById('inventoryDisplay').innerHTML = globalStore.displayInventory();
+            
+            // Reset form
+            productForm.reset();
+            expirationSection.style.display = 'none';
+            
+            alert(`✅ Added ${name} to inventory!`);
+            
+        } catch (error) {
+            alert(`❌ Error: ${error.message}`);
+        }
+    });
+}); 
+
 };
 
 // Update the HTML to add a unit test button
