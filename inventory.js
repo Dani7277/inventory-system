@@ -241,4 +241,68 @@ class Store {
             product.quantity < threshold
         );
     }
+    /**
+     * Generates a sales report
+     * @returns {object} Report object with various statistics
+     */
+    generateSalesReport() {
+        const report = {
+            totalProducts: this.inventory.length,
+            totalValue: this.getInventoryValue(),
+            averagePrice: 0,
+            highestValueProduct: null,
+            lowestValueProduct: null,
+            perishableCount: 0,
+            regularCount: 0
+        };
+
+        if (this.inventory.length > 0) {
+            // Calculate average price
+            const totalPrice = this.inventory.reduce((sum, product) => 
+                sum + product.price, 0);
+            report.averagePrice = totalPrice / this.inventory.length;
+
+            // Find highest and lowest value products
+            report.highestValueProduct = this.inventory.reduce((max, product) => 
+                product.getTotalValue() > max.getTotalValue() ? product : max
+            );
+            
+            report.lowestValueProduct = this.inventory.reduce((min, product) => 
+                product.getTotalValue() < min.getTotalValue() ? product : min
+            );
+
+            // Count product types
+            report.perishableCount = this.inventory.filter(product => 
+                product instanceof PerishableProduct).length;
+            report.regularCount = report.totalProducts - report.perishableCount;
+        }
+
+        return report;
+    }
+
+    /**
+     * Displays sales report in HTML format
+     * @returns {string} HTML formatted report
+     */
+    displaySalesReport() {
+        const report = this.generateSalesReport();
+        let html = '<div class="sales-report">';
+        html += '<h3>📊 Sales Report</h3>';
+        html += `<p>Total Products: <strong>${report.totalProducts}</strong></p>`;
+        html += `<p>Total Inventory Value: <strong>$${report.totalValue.toFixed(2)}</strong></p>`;
+        html += `<p>Average Price: <strong>$${report.averagePrice.toFixed(2)}</strong></p>`;
+        html += `<p>Regular Products: <strong>${report.regularCount}</strong></p>`;
+        html += `<p>Perishable Products: <strong>${report.perishableCount}</strong></p>`;
+        
+        if (report.highestValueProduct) {
+            html += `<p>Highest Value: <strong>${report.highestValueProduct.name}</strong> ($${report.highestValueProduct.getTotalValue().toFixed(2)})</p>`;
+        }
+        
+        if (report.lowestValueProduct) {
+            html += `<p>Lowest Value: <strong>${report.lowestValueProduct.name}</strong> ($${report.lowestValueProduct.getTotalValue().toFixed(2)})</p>`;
+        }
+        
+        html += '</div>';
+        return html;
+    }
 }
