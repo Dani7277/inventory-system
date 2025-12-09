@@ -58,3 +58,50 @@ class PerishableProduct extends Product {
     }
 }
 
+/**
+ * Store class to manage inventory of products
+ * Handles adding, finding, and calculating total inventory value
+ */
+class Store {
+    /**
+     * Constructor for Store class
+     */
+    constructor() {
+        this.inventory = [];
+    }
+
+    /**
+     * Adds a product to the store inventory
+     * @param {Product} product - Product or PerishableProduct object
+     */
+    addProduct(product) {
+        // Validate that it's a Product instance
+        if (product instanceof Product) {
+            this.inventory.push(product);
+            console.log(`✅ Added: ${product.name} to inventory`);
+        } else {
+            throw new Error("Only Product or PerishableProduct objects can be added");
+        }
+    }
+
+    /**
+     * Calculates total value of all products in inventory
+     * @returns {number} Total inventory value
+     */
+    getInventoryValue() {
+        return this.inventory.reduce((total, product) => {
+            return total + product.getTotalValue();
+        }, 0);
+    }
+
+    /**
+     * Finds a product by its name (case-insensitive)
+     * @param {string} name - Product name to search for
+     * @returns {Product|null} Found product or null if not found
+     */
+    findProductByName(name) {
+        return this.inventory.find(product => 
+            product.name.toLowerCase() === name.toLowerCase()
+        ) || null;
+    }
+}
