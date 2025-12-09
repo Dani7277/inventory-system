@@ -453,4 +453,54 @@ class Store {
         localStorage.removeItem('inventoryData');
         console.log('🗑️ localStorage cleared');
     }
+        /**
+     * Sorts inventory by various criteria
+     * @param {string} criteria - 'name', 'price', 'quantity', 'totalValue'
+     * @param {string} order - 'asc' (ascending) or 'desc' (descending)
+     */
+    sortInventory(criteria = 'name', order = 'asc') {
+        const sortOrder = order === 'desc' ? -1 : 1;
+        
+        this.inventory.sort((a, b) => {
+            let valueA, valueB;
+            
+            switch(criteria) {
+                case 'name':
+                    valueA = a.name.toLowerCase();
+                    valueB = b.name.toLowerCase();
+                    return sortOrder * valueA.localeCompare(valueB);
+                    
+                case 'price':
+                    valueA = a.price;
+                    valueB = b.price;
+                    break;
+                    
+                case 'quantity':
+                    valueA = a.quantity;
+                    valueB = b.quantity;
+                    break;
+                    
+                case 'totalValue':
+                    valueA = a.getTotalValue();
+                    valueB = b.getTotalValue();
+                    break;
+                    
+                default:
+                    return 0;
+            }
+            
+            return sortOrder * (valueA - valueB);
+        });
+    }
+
+    /**
+     * Gets products sorted by expiration date (soonest first)
+     * @returns {Array} Sorted perishable products
+     */
+    getProductsSortedByExpiration() {
+        const perishables = this.inventory.filter(p => p instanceof PerishableProduct);
+        return perishables.sort((a, b) => 
+            new Date(a.expirationDate) - new Date(b.expirationDate)
+        );
+    }
 }
