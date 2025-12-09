@@ -1,0 +1,185 @@
+// ============================================
+// COMMIT 1: Create Base Product Class
+// ============================================
+
+/**
+ * Base class for all products in the inventory system.
+ * Represents a generic product with name, price, and quantity.
+ */
+class Product {
+    /**
+     * Constructor for Product class
+     * @param {string} name - Product name
+     * @param {number} price - Product price in dollars
+     * @param {number} quantity - Quantity in stock
+     */
+    constructor(name, price, quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    /**
+     * Calculates total value of this product in stock
+     * @returns {number} Total value (price * quantity)
+     */
+    getTotalValue() {
+        return this.price * this.quantity;
+    }
+
+    /**
+     * Returns string representation of the product
+     * @returns {string} Formatted product details
+     */
+    toString() {
+        return `Product: ${this.name}, Price: $${this.price.toFixed(2)}, Quantity: ${this.quantity}`;
+    }
+
+    // ============================================
+    // COMMIT 6: Add Static Method to Product Class
+    // ============================================
+
+    /**
+     * Static method to apply discount to an array of products
+     * @param {Array} products - Array of Product objects
+     * @param {number} discount - Discount percentage (e.g., 0.15 for 15%)
+     */
+    static applyDiscount(products, discount) {
+        // Validate inputs
+        if (!Array.isArray(products)) {
+            throw new Error("First argument must be an array of products");
+        }
+        if (typeof discount !== 'number' || discount < 0 || discount > 1) {
+            throw new Error("Discount must be a number between 0 and 1");
+        }
+
+        // Apply discount to each product
+        products.forEach(product => {
+            if (product instanceof Product) {
+                product.price = product.price * (1 - discount);
+            }
+        });
+    }
+}
+
+// ============================================
+// COMMIT 2: Create PerishableProduct Subclass
+// ============================================
+
+/**
+ * Subclass of Product for perishable items with expiration dates.
+ * Inherits all properties and methods from Product class.
+ */
+class PerishableProduct extends Product {
+    /**
+     * Constructor for PerishableProduct
+     * @param {string} name - Product name
+     * @param {number} price - Product price
+     * @param {number} quantity - Quantity in stock
+     * @param {string} expirationDate - Expiration date (YYYY-MM-DD format)
+     */
+    constructor(name, price, quantity, expirationDate) {
+        // Call parent class constructor
+        super(name, price, quantity);
+        this.expirationDate = expirationDate;
+    }
+
+    /**
+     * Overrides parent toString() method to include expiration date
+     * @returns {string} Formatted product details with expiration
+     */
+    toString() {
+        return `Product: ${this.name}, Price: $${this.price.toFixed(2)}, Quantity: ${this.quantity}, Expiration Date: ${this.expirationDate}`;
+    }
+}
+
+// ============================================
+// COMMIT 3: Create Store Management Class
+// ============================================
+
+/**
+ * Store class to manage inventory of products
+ * Handles adding, finding, and calculating total inventory value
+ */
+class Store {
+    /**
+     * Constructor for Store class
+     */
+    constructor() {
+        this.inventory = [];
+    }
+
+    /**
+     * Adds a product to the store inventory
+     * @param {Product} product - Product or PerishableProduct object
+     */
+    addProduct(product) {
+        // Validate that it's a Product instance
+        if (product instanceof Product) {
+            this.inventory.push(product);
+            console.log(`✅ Added: ${product.name} to inventory`);
+        } else {
+            throw new Error("Only Product or PerishableProduct objects can be added");
+        }
+    }
+
+    /**
+     * Calculates total value of all products in inventory
+     * @returns {number} Total inventory value
+     */
+    getInventoryValue() {
+        return this.inventory.reduce((total, product) => {
+            return total + product.getTotalValue();
+        }, 0);
+    }
+
+    /**
+     * Finds a product by its name (case-insensitive)
+     * @param {string} name - Product name to search for
+     * @returns {Product|null} Found product or null if not found
+     */
+    findProductByName(name) {
+        return this.inventory.find(product => 
+            product.name.toLowerCase() === name.toLowerCase()
+        ) || null;
+    }
+
+    // ============================================
+    // COMMIT 7: Add Display Method to Store Class
+    // ============================================
+
+    /**
+     * Displays all products in inventory in a formatted way
+     * @returns {string} HTML representation of inventory
+     */
+    displayInventory() {
+        if (this.inventory.length === 0) {
+            return '<p>No products in inventory</p>';
+        }
+
+        let html = `<div class="product-list">`;
+        
+        this.inventory.forEach(product => {
+            const isPerishable = product instanceof PerishableProduct;
+            const productClass = isPerishable ? 'perishable' : 'regular';
+            const typeLabel = isPerishable ? '🕒 Perishable' : '📦 Regular';
+            
+            html += `
+                <div class="product-card ${productClass}">
+                    <h3>${product.name} <small>(${typeLabel})</small></h3>
+                    <p><strong>Price:</strong> $${product.price.toFixed(2)}</p>
+                    <p><strong>Quantity:</strong> ${product.quantity}</p>
+                    <p><strong>Total Value:</strong> $${product.getTotalValue().toFixed(2)}</p>
+            `;
+            
+            if (isPerishable) {
+                html += `<p><strong>Expires:</strong> ${product.expirationDate}</p>`;
+            }
+            
+            html += `</div>`;
+        });
+        
+        html += `</div>`;
+        return html;
+    }
+}
