@@ -118,3 +118,86 @@ document.addEventListener('DOMContentLoaded', () => {
         </ol>
     `;
 });
+const runUnitTests = () => {
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '<h3>🧪 Unit Test Results:</h3>';
+    
+    const tests = [];
+    
+    // Test 1: Product Creation
+    try {
+        const product = new Product("Test", 10, 5);
+        tests.push({
+            name: "Product Creation",
+            passed: product.name === "Test" && product.price === 10 && product.quantity === 5
+        });
+    } catch (e) {
+        tests.push({ name: "Product Creation", passed: false, error: e.message });
+    }
+    
+    // Test 2: Total Value Calculation
+    try {
+        const product = new Product("Test", 10, 5);
+        tests.push({
+            name: "Total Value Calculation",
+            passed: product.getTotalValue() === 50
+        });
+    } catch (e) {
+        tests.push({ name: "Total Value Calculation", passed: false, error: e.message });
+    }
+    
+    // Test 3: Perishable Product Creation
+    try {
+        const perishable = new PerishableProduct("Milk", 2, 10, "2024-12-31");
+        tests.push({
+            name: "Perishable Product Creation",
+            passed: perishable instanceof PerishableProduct && perishable.expirationDate === "2024-12-31"
+        });
+    } catch (e) {
+        tests.push({ name: "Perishable Product Creation", passed: false, error: e.message });
+    }
+    
+    // Test 4: Store Operations
+    try {
+        const store = new Store();
+        const product = new Product("Test", 10, 5);
+        store.addProduct(product);
+        tests.push({
+            name: "Store Add Product",
+            passed: store.inventory.length === 1
+        });
+    } catch (e) {
+        tests.push({ name: "Store Add Product", passed: false, error: e.message });
+    }
+    
+    // Test 5: Inventory Value
+    try {
+        const store = new Store();
+        store.addProduct(new Product("A", 10, 2));
+        store.addProduct(new Product("B", 20, 3));
+        tests.push({
+            name: "Inventory Value Calculation",
+            passed: store.getInventoryValue() === 80
+        });
+    } catch (e) {
+        tests.push({ name: "Inventory Value Calculation", passed: false, error: e.message });
+    }
+    
+    // Display test results
+    tests.forEach(test => {
+        const color = test.passed ? 'green' : 'red';
+        const icon = test.passed ? '✅' : '❌';
+        outputDiv.innerHTML += `<p style="color: ${color};">${icon} ${test.name}: ${test.passed ? 'PASSED' : 'FAILED'}`;
+        if (test.error) {
+            outputDiv.innerHTML += ` - ${test.error}`;
+        }
+        outputDiv.innerHTML += '</p>';
+    });
+    
+    // Summary
+    const passedCount = tests.filter(t => t.passed).length;
+    const totalCount = tests.length;
+    outputDiv.innerHTML += `<h4>Summary: ${passedCount}/${totalCount} tests passed</h4>`;
+};
+
+// Update the HTML to add a unit test button
