@@ -305,4 +305,45 @@ class Store {
         html += '</div>';
         return html;
     }
+      /**
+     * Exports inventory to CSV format
+     * @returns {string} CSV data
+     */
+    exportToCSV() {
+        const headers = ['Name', 'Price', 'Quantity', 'Total Value', 'Expiration Date', 'Type'];
+        const rows = this.inventory.map(product => {
+            const isPerishable = product instanceof PerishableProduct;
+            return [
+                `"${product.name}"`,
+                product.price.toFixed(2),
+                product.quantity,
+                product.getTotalValue().toFixed(2),
+                isPerishable ? product.expirationDate : 'N/A',
+                isPerishable ? 'Perishable' : 'Regular'
+            ];
+        });
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(','))
+        ].join('\n');
+
+        return csvContent;
+    }
+
+    /**
+     * Downloads the CSV file
+     */
+    downloadCSV() {
+        const csv = this.exportToCSV();
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inventory-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 }
