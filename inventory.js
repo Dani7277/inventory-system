@@ -51,6 +51,34 @@ class Product {
             }
         });
     }
+        /**
+     * Static method to update quantity for multiple products
+     * @param {Array} products - Array of products
+     * @param {string} name - Product name
+     * @param {number} quantity - New quantity
+     * @returns {number} Number of products updated
+     */
+    static bulkUpdateQuantity(products, name, quantity) {
+        let updated = 0;
+        products.forEach(product => {
+            if (product.name === name) {
+                product.quantity = quantity;
+                updated++;
+            }
+        });
+        return updated;
+    }
+
+    /**
+     * Static method to remove products below threshold
+     * @param {Array} products - Array of products
+     * @param {number} threshold - Quantity threshold
+     * @returns {Array} Filtered products
+     */
+    static removeOutOfStock(products, threshold = 0) {
+        return products.filter(product => product.quantity > threshold);
+    }
+
 }
 
 /**
