@@ -30,7 +30,29 @@ class Product {
     toString() {
         return `Product: ${this.name}, Price: $${this.price.toFixed(2)}, Quantity: ${this.quantity}`;
     }
+     /**
+     * Static method to apply discount to an array of products
+     * @param {Array} products - Array of Product objects
+     * @param {number} discount - Discount percentage (e.g., 0.15 for 15%)
+     */
+    static applyDiscount(products, discount) {
+        // Validate inputs
+        if (!Array.isArray(products)) {
+            throw new Error("First argument must be an array of products");
+        }
+        if (typeof discount !== 'number' || discount < 0 || discount > 1) {
+            throw new Error("Discount must be a number between 0 and 1");
+        }
+
+        // Apply discount to each product
+        products.forEach(product => {
+            if (product instanceof Product) {
+                product.price = product.price * (1 - discount);
+            }
+        });
+    }
 }
+
 /**
  * Subclass of Product for perishable items with expiration dates.
  * Inherits all properties and methods from Product class.
