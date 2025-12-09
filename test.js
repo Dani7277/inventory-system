@@ -35,3 +35,61 @@ const testProductMethods = () => {
     
     return "✅ Product methods tested successfully";
 };
+const runTests = () => {
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '<h3>Test Results:</h3>';
+    
+    try {
+        // Create products
+        const products = createTestProducts();
+        outputDiv.innerHTML += "<p>✅ Test products created successfully</p>";
+        
+        // Create store and add products
+        const myStore = new Store();
+        products.forEach(product => myStore.addProduct(product));
+        outputDiv.innerHTML += `<p>✅ ${products.length} products added to store</p>`;
+        
+        // Test 1: Display initial inventory value
+        const initialValue = myStore.getInventoryValue();
+        outputDiv.innerHTML += `<p>💰 Initial Inventory Value: <strong>$${initialValue.toFixed(2)}</strong></p>`;
+        
+        // Test 2: Apply 15% discount
+        outputDiv.innerHTML += "<p>🔽 Applying 15% discount to all products...</p>";
+        Product.applyDiscount(myStore.inventory, 0.15);
+        
+        // Test 3: Display discounted inventory value
+        const discountedValue = myStore.getInventoryValue();
+        outputDiv.innerHTML += `<p>💰 Discounted Inventory Value: <strong>$${discountedValue.toFixed(2)}</strong></p>`;
+        
+        // Test 4: Find a specific product
+        const foundProduct = myStore.findProductByName("Milk");
+        if (foundProduct) {
+            outputDiv.innerHTML += `<p>🔍 Found product: ${foundProduct.toString()}</p>`;
+        } else {
+            outputDiv.innerHTML += `<p>❌ Product not found</p>`;
+        }
+        
+        // Test 5: Try finding non-existent product
+        const notFound = myStore.findProductByName("Nonexistent");
+        outputDiv.innerHTML += `<p>${notFound === null ? '✅' : '❌'} Search for non-existent product returned: ${notFound}</p>`;
+        
+        // Display inventory
+        const inventoryDiv = document.getElementById('inventoryDisplay');
+        inventoryDiv.innerHTML = `
+            <h3>Store Inventory (${myStore.inventory.length} items):</h3>
+            <p>Total Value: <strong>$${myStore.getInventoryValue().toFixed(2)}</strong></p>
+            ${myStore.displayInventory()}
+        `;
+        
+        // Log to console for debugging
+        console.log("Initial Inventory Value:", initialValue);
+        console.log("Discounted Inventory Value:", discountedValue);
+        console.log("Products after discount:", myStore.inventory);
+        
+        outputDiv.innerHTML += "<p>✅ All tests completed successfully!</p>";
+        
+    } catch (error) {
+        outputDiv.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+        console.error("Test Error:", error);
+    }
+};
