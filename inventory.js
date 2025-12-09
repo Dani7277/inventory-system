@@ -503,4 +503,72 @@ class Store {
             new Date(a.expirationDate) - new Date(b.expirationDate)
         );
     }
+        /**
+     * Generates statistics dashboard
+     * @returns {object} Statistics object
+     */
+    getStatistics() {
+        const perishables = this.inventory.filter(p => p instanceof PerishableProduct);
+        const regulars = this.inventory.filter(p => !(p instanceof PerishableProduct));
+        
+        const stats = {
+            totalProducts: this.inventory.length,
+            perishableCount: perishables.length,
+            regularCount: regulars.length,
+            totalValue: this.getInventoryValue(),
+            
+            // Price statistics
+            averagePrice: this.inventory.reduce((sum, p) => sum + p.price, 0) / this.inventory.length,
+            minPrice: Math.min(...this.inventory.map(p => p.price)),
+            maxPrice: Math.max(...this.inventory.map(p => p.price)),
+            
+            // Quantity statistics
+            totalQuantity: this.inventory.reduce((sum, p) => sum + p.quantity, 0),
+            lowStockCount: this.getLowStockProducts().length,
+            outOfStockCount: this.getLowStockProducts(0).length,
+            
+            // Expiration statistics
+            expiringSoon: perishables.filter(p => p.isExpiringSoon()).length,
+            expiredCount: perishables.filter(p => p.isExpired()).length
+        };
+        
+        return stats;
+    }
+
+    /**
+     * Displays statistics in HTML
+     * @returns {string} HTML formatted statistics
+     */
+    displayStatistics() {
+        const stats = this.getStatistics();
+        return `
+            <div class="stats-dashboard">
+                <h3>📈 Statistics Dashboard</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Products</h4>
+                        <p>Total: ${stats.totalProducts}</p>
+                        <p>Perishable: ${stats.perishableCount}</p>
+                        <p>Regular: ${stats.regularCount}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Value</h4>
+                        <p>Total: $${stats.totalValue.toFixed(2)}</p>
+                        <p>Avg Price: $${stats.averagePrice.toFixed(2)}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Stock</h4>
+                        <p>Total Qty: ${stats.totalQuantity}</p>
+                        <p>Low Stock: ${stats.lowStockCount}</p>
+                        <p>Out of Stock: ${stats.outOfStockCount}</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Expiration</h4>
+                        <p>Expiring Soon: ${stats.expiringSoon}</p>
+                        <p>Expired: ${stats.expiredCount}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 }
