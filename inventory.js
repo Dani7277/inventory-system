@@ -389,4 +389,68 @@ class Store {
         this.price *= (1 - percentage / 100);
         this.price = Number(this.price.toFixed(2));
     }
+     /**
+     * Saves inventory to localStorage
+     */
+    saveToLocalStorage() {
+        const inventoryData = this.inventory.map(product => {
+            const baseData = {
+                name: product.name,
+                price: product.price,
+                quantity: product.quantity,
+                type: product instanceof PerishableProduct ? 'perishable' : 'regular'
+            };
+            
+            if (product instanceof PerishableProduct) {
+                baseData.expirationDate = product.expirationDate;
+            }
+            
+            return baseData;
+        });
+        
+        localStorage.setItem('inventoryData', JSON.stringify(inventoryData));
+        console.log('💾 Inventory saved to localStorage');
+    }
+
+    /**
+     * Loads inventory from localStorage
+     */
+    loadFromLocalStorage() {
+        const savedData = localStorage.getItem('inventoryData');
+        if (!savedData) return;
+        
+        try {
+            const inventoryData = JSON.parse(savedData);
+            this.inventory = [];
+            
+            inventoryData.forEach(item => {
+                if (item.type === 'perishable') {
+                    this.addProduct(new PerishableProduct(
+                        item.name,
+                        item.price,
+                        item.quantity,
+                        item.expirationDate
+                    ));
+                } else {
+                    this.addProduct(new Product(
+                        item.name,
+                        item.price,
+                        item.quantity
+                    ));
+                }
+            });
+            
+            console.log('📂 Inventory loaded from localStorage');
+        } catch (error) {
+            console.error('Error loading from localStorage:', error);
+        }
+    }
+
+    /**
+     * Clears localStorage
+     */
+    clearLocalStorage() {
+        localStorage.removeItem('inventoryData');
+        console.log('🗑️ localStorage cleared');
+    }
 }
