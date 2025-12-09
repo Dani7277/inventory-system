@@ -260,4 +260,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 };
 
-// Update the HTML to add a unit test button
+const displayInventoryChart = () => {
+    const outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '<h3>📊 Inventory Visualization</h3>';
+    
+    if (!globalStore || globalStore.inventory.length === 0) {
+        outputDiv.innerHTML += '<p>No data to visualize</p>';
+        return;
+    }
+    
+    // Create simple text-based bar chart
+    const stats = globalStore.getStatistics();
+    const maxValue = Math.max(...globalStore.inventory.map(p => p.getTotalValue()));
+    
+    outputDiv.innerHTML += `
+        <h4>Product Value Distribution</h4>
+        <div style="margin: 20px 0;">
+    `;
+    
+    globalStore.inventory.forEach(product => {
+        const barWidth = (product.getTotalValue() / maxValue) * 100;
+        const productType = product instanceof PerishableProduct ? '🕒' : '📦';
+        
+        outputDiv.innerHTML += `
+            <div style="margin: 10px 0;">
+                <div style="display: flex; align-items: center;">
+                    <div style="width: 200px;">${productType} ${product.name}</div>
+                    <div style="width: ${barWidth}%; height: 20px; background: #007bff; margin: 0 10px;"></div>
+                    <div>$${product.getTotalValue().toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+    });
+    
+    outputDiv.innerHTML += `
+        </div>
+        <h4>Inventory Breakdown</h4>
+        <div style="display: flex; gap: 20px; margin: 20px 0;">
+            <div style="flex: 1;">
+                <h5>By Type</h5>
+                <p>Regular: ${stats.regularCount}</p>
+                <p>Perishable: ${stats.perishableCount}</p>
+            </div>
+            <div style="flex: 1;">
+                <h5>Stock Status</h5>
+                <p>In Stock: ${stats.totalProducts - stats.outOfStockCount}</p>
+                <p>Out of Stock: ${stats.outOfStockCount}</p>
+                <p>Low Stock: ${stats.lowStockCount}</p>
+            </div>
+        </div>
+    `;
+};
+
